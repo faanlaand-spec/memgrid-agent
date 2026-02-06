@@ -7,14 +7,13 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 BRAND_NAME = "MemGrid"
-BRAND_SLOGAN = "The PowerGrid of Agent Memory – Electricity for the agent economy."
+BRAND_SLOGAN = "The PowerGrid of Agent Memory – Electricity for the agent economy. No long-term memory? Your agent is offline in the dark."
 
 def get_db_connection():
     conn = sqlite3.connect('memgrid.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-# ایجاد جدول‌ها
 with get_db_connection() as conn:
     conn.execute('''
         CREATE TABLE IF NOT EXISTS api_keys (
@@ -27,7 +26,7 @@ with get_db_connection() as conn:
     try:
         conn.execute("ALTER TABLE api_keys ADD COLUMN trial_end INTEGER DEFAULT 0")
     except:
-        pass  # اگر وجود داشت، رد کن
+        pass
     conn.execute('''
         CREATE TABLE IF NOT EXISTS memories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +49,7 @@ def home():
 @app.route('/generate_key/<agent_id>', methods=['GET'])
 def generate_key(agent_id):
     new_key = str(uuid.uuid4())
-    trial_end = int(time.time()) + 86400  # 24 ساعت
+    trial_end = int(time.time()) + 86400
     conn = get_db_connection()
     try:
         conn.execute(
@@ -60,7 +59,7 @@ def generate_key(agent_id):
         conn.commit()
     except sqlite3.IntegrityError:
         conn.close()
-        return jsonify({'error': 'agent_id exists'}), 400
+        return jsonify({'error': 'agent_id already exists'}), 400
     conn.close()
     return jsonify({
         'api_key': new_key,
@@ -75,12 +74,11 @@ def subscribe():
     user = validate_api_key(api_key)
     if not user:
         return jsonify({'error': 'Invalid key'}), 401
-    # تست پرداخت – همیشه قبول
     conn = get_db_connection()
     conn.execute('UPDATE api_keys SET subscribed = 1 WHERE key = ?', (api_key,))
     conn.commit()
     conn.close()
-    return jsonify({'message': f'Activated! Powered by {BRAND_NAME}.'})
+    return jsonify({'message': f'Subscription activated! Powered by {BRAND_NAME}.'})
 
 @app.route('/store', methods=['POST'])
 def store_memory():
@@ -98,7 +96,7 @@ def store_memory():
     conn.execute('INSERT INTO memories (agent_id, data) VALUES (?, ?)', (user['agent_id'], encrypted))
     conn.commit()
     conn.close()
-    return jsonify({'message': 'Stored!'})
+    return jsonify({'message': 'Memory stored'})
 
 @app.route('/agent_chat', methods=['POST'])
 def agent_chat():
@@ -111,7 +109,7 @@ def agent_chat():
     message = request.json.get('message')
     if not message:
         return jsonify({'error': 'message required'}), 400
-    response = f"MemGrid response: Long-term memory powers agents. Your message: {message}\nPowered by {BRAND_NAME}"
+    response = f"MemGrid: Long-term memory powers agents. Your message: {message}\nPowered by {BRAND_NAME}"
     return jsonify({'response': response})
 
 if __name__ == '__main__':
