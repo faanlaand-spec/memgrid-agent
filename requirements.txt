@@ -1,0 +1,6 @@
+flask
+web3
+transformers
+chromadb
+requests
+gunicorn
