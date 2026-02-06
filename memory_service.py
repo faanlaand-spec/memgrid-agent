@@ -2,12 +2,17 @@ import uuid
 import time
 import sqlite3
 import base64
+import requests as external_requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
 BRAND_NAME = "MemGrid"
 BRAND_SLOGAN = "The PowerGrid of Agent Memory – Electricity for the agent economy. No long-term memory? Your agent is offline in the dark."
+
+# ← اینجا API Key واقعی که گرفتی رو بگذار
+AGENTVERSE_API_KEY = "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE3NzgxNTU5MTcsImlhdCI6MTc3MDM3OTkxNywiaXNzIjoiZmV0Y2guYWkiLCJqdGkiOiJkZjkyNzA1YzkyOWFiNmQ2ZTU2ZmJkMjQiLCJzY29wZSI6ImF2Iiwic3ViIjoiYzFjYzVmMWZmM2M0ZTc0OGY4NzEwZjMyYmMyN2U4YTBhOGY3OTJjYjViYjcxNTVkIn0.huR_lvsX8HWufiF_YZh2yp4Ep5cTLISHWKBfhEwmpKLjmhdFUhgsmRVSVnC5RsDlb52wOIE29Ja448X1Q6JVWoObTswrWb8icHQq8prrF2LBGgCgi9_Y6q8WQKdWX__XnnUi6ynW2gsdov1a9WlpQ08f-LqPf8bFBthuQohJQ7_aP0qakkNf75aMWD5_Pa-yqjrTb4RjgeZrIqDp6XEk7bXpACRQvZVM2SxQ24zQiJASTSSSbiIvuoy3Q9dfjWlqLTQAv9TnkrRmjURI1tGBZO1J24Bstnzu9XmnrKKSZqaquAzL68DoFIRaJPvxDvluAsurpkaEFTFnpE5YH9LHNQ"  # ← این نمونه است، عوض کن
+AGENTVERSE_API_URL = "https://api.agentverse.ai/agents/register"
 
 def get_db_connection():
     conn = sqlite3.connect('memgrid.db')
@@ -25,8 +30,9 @@ with get_db_connection() as conn:
     ''')
     try:
         conn.execute("ALTER TABLE api_keys ADD COLUMN trial_end INTEGER DEFAULT 0")
-    except:
+    except sqlite3.OperationalError:
         pass
+
     conn.execute('''
         CREATE TABLE IF NOT EXISTS memories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,6 +117,35 @@ def agent_chat():
         return jsonify({'error': 'message required'}), 400
     response = f"MemGrid: Long-term memory powers agents. Your message: {message}\nPowered by {BRAND_NAME}"
     return jsonify({'response': response})
+
+@app.route('/register_to_agentverse', methods=['POST'])
+def register_to_agentverse():
+    api_key = request.headers.get('X-API-KEY')
+    user = validate_api_key(api_key)
+    if not user or user['subscribed'] == 0:
+        return jsonify({'error': 'Subscription required'}), 403
+    
+    try:
+        payload = {
+            'agent_id': user['agent_id'],
+            'name': f"{BRAND_NAME} Memory Provider",
+            'description': f'{BRAND_NAME} – Long-term memory service essential for agents. Like electricity for humans!',
+            'endpoint': 'https://memgrid-agent.onrender.com',
+            'brand': BRAND_NAME
+        }
+        reg_resp = external_requests.post(
+            AGENTVERSE_API_URL,
+            headers={'Authorization': f'Bearer {AGENTVERSE_API_KEY}'},
+            json=payload
+        )
+        status = reg_resp.json()
+    except Exception as e:
+        status = {'status': 'Registration attempted', 'error': str(e)}
+    
+    return jsonify({
+        'message': 'Registration to Agentverse completed',
+        'status': status
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
