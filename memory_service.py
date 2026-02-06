@@ -10,7 +10,7 @@ import chromadb  # semantic search رایگان
 app = Flask(__name__)
 
 # مدل سبک
-generator = pipeline('text-generation', model='gpt2')
+#generator = pipeline('text-generation', model='gpt2')
 
 # ChromaDB برای جستجوی معنایی (سبک و persistent)
 chroma_client = chromadb.PersistentClient(path="./chroma_memgrid")
@@ -114,4 +114,5 @@ def register_to_agentverse():
     # ... (مثل قبل – بعداً با API key واقعی)
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000)
