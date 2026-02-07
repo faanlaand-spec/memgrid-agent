@@ -13,7 +13,7 @@ BRAND_NAME = "MemGrid"
 BRAND_SLOGAN = "The PowerGrid of Agent Memory – Electricity for the agent economy. No long-term memory? Your agent is offline in the dark."
 
 AGENTVERSE_API_URL = 'https://agentverse.ai/v2/agents'
-AGENTVERSE_API_KEY = 'ak_live_eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE3NzMwNDA5MjYsImlhdCI6MTc3MDQ0ODkyNiwiaXNzIjoiZmV0Y2guYWkiLCJqdGkiOiIzN2QwMDViMDU0OTE2NmE4NGU1ZTllZWQiLCJzY29wZSI6ImF2Iiwic3ViIjoiYzFjYzVmMWZmM2M0ZTc0OGY4NzEwZjMyYmMyN2U4YTBhOGY3OTJjYjViYjcxNTVkIn0.DUSKUO_b5NYpR27vy2VyRxJzhdOYmcvW8tm0LX3EfHU0LGt8J39yWhXOIzHlazCiIwKwDyT1oIoRleQfbnLNZJsA0Q5X9O1eWlHGfl5GmObwJi0n0VZY8MnmUcDA-BIu1OPiA_LHWx3iYvACF3Oswj2DVNXAqKfo3fsFViZCBPBpTxSX87-c80yfDiFhg1cT_urKkUA-hxHFc35YSd9kRKpKlKwYHspEZzTsf6z83iAhuNcqdNbsSBDtca3f7dD2WTuwxyk5brNOSycsQg3ASMAu3yCpSB8U1r953ArQPAKXcvVxlrEPeVRoyuGlbJRe083NinRWlGZPeEp5gv1auA'  # کلید واقعی (همون که کار می‌کرد)
+AGENTVERSE_API_KEY = 'ak_live_eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjY1MDA4Njk0NzEsImlhdCI6MTc3MDQ2OTQ3MSwiaXNzIjoiZmV0Y2guYWkiLCJqdGkiOiJmNjAwOGRkOTQxN2UxMmNhNTAxZTYzNzMiLCJzY29wZSI6ImF2OmFpIGF2Omhvc3RpbmcgYXY6bWFpbGJveCIsInN1YiI6ImMxY2M1ZjFmZjNjNGU3NDhmODcxMGYzMmJjMjdlOGEwYThmNzkyY2I1YmI3MTU1ZCJ9.m-lq6DrDABlD7TNSYOdBZReQq6FLQpjXYU_-zn0bXllLJAM2lZPpcViRqjtQQzjY9lfwJOCSY3yCsEKycsNDJ49ek94TrOwqk_NvQ58bXeYkkttjGsCTuTpvFZWLjNq271kqNRNFiVbBAoTACyLeYskNakAnW3K5bblt-vPaZ07g9vrkplDKuTj0VC9NdH039FlOk8DQYYGo1gBy5CR7t2so8_R7LmysHo1uKMf7NsDeZoJLoK8tzSvzjb3Slb7uKBr8t8wEvQuEQSTy14HUElV88SPYrBo2vim1xr1h2m4MgNrlx5yjazeS3Yc2ItpV0cr_UDHv8w4E5agy16ZJaQ'  # کلید واقعی (همون که کار می‌کرد)
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -180,3 +180,4 @@ def register_to_agentverse():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
