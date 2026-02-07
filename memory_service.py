@@ -150,7 +150,6 @@ def register_to_agentverse():
     if not user or user['subscribed'] == 0:
         return jsonify({'error': 'Subscription required'}), 403
     try:
-        # ساخت address ساده (API قبول می‌کنه اگر منحصربه‌فرد باشه)
         address = f"agent1{user['agent_id'][:50]}"
         payload = {
             'address': address,
@@ -160,14 +159,23 @@ def register_to_agentverse():
             'endpoint': 'https://memgrid-agent.onrender.com',
             'brand': BRAND_NAME
         }
+        print(f"Sending registration request to Agentverse: {payload}")  # چاپ payload در لاگ
         reg_resp = external_requests.post(
             AGENTVERSE_API_URL,
-            headers={'Authorization': f'Bearer {AGENTVERSE_API_KEY}'},
-            json=payload
+            headers={
+                'Authorization': f'Bearer {AGENTVERSE_API_KEY}',
+                'Content-Type': 'application/json'
+            },
+            json=payload,
+            timeout=30,  # اضافه کردن timeout
+            verify=True  # اگر مشکل SSL بود، بعداً False می‌کنیم
         )
+        print(f"Agentverse response status: {reg_resp.status_code}")  # چاپ status
+        print(f"Agentverse response body: {reg_resp.text}")  # چاپ پاسخ کامل در لاگ
         status = reg_resp.json()
         return jsonify({'message': 'Registration to Agentverse completed', 'status': status})
     except Exception as e:
+        print(f"Registration error: {str(e)}")  # چاپ ارور دقیق
         return jsonify({'message': 'Registration attempted', 'error': str(e)}), 500
 
 if __name__ == '__main__':
