@@ -6,6 +6,7 @@ from psycopg2.extras import RealDictCursor
 import base64
 import requests as external_requests
 from flask import Flask, request, jsonify
+from fetchai.registration import register_with_agentverse
 
 app = Flask(__name__)
 
@@ -150,34 +151,19 @@ def register_to_agentverse():
     if not user or user['subscribed'] == 0:
         return jsonify({'error': 'Subscription required'}), 403
     try:
+        # ساخت address ساده (SDK قبول می‌کنه)
         address = f"agent1{user['agent_id'][:50]}"
-        payload = {
-            'address': address,
-            'agent_id': user['agent_id'],
-            'name': f"{BRAND_NAME} Memory Provider",
-            'description': f'{BRAND_NAME} – Long-term memory service for agents.',
-            'endpoint': 'https://memgrid-agent.onrender.com',
-            'brand': BRAND_NAME
-        }
-        print(f"Sending registration request to Agentverse: {payload}")  # چاپ payload در لاگ
-        reg_resp = external_requests.post(
-            AGENTVERSE_API_URL,
-            headers={
-                'Authorization': f'Bearer {AGENTVERSE_API_KEY}',
-                'Content-Type': 'application/json'
-            },
-            json=payload,
-            timeout=30,  # اضافه کردن timeout
-            verify=True  # اگر مشکل SSL بود، بعداً False می‌کنیم
+        # استفاده از SDK برای ثبت
+        registration_result = register_with_agentverse(
+            identity=address,
+            url='https://memgrid-agent.onrender.com',
+            agentverse_token=AGENTVERSE_API_KEY
         )
-        print(f"Agentverse response status: {reg_resp.status_code}")  # چاپ status
-        print(f"Agentverse response body: {reg_resp.text}")  # چاپ پاسخ کامل در لاگ
-        status = reg_resp.json()
+        status = registration_result  # نتیجه SDK
         return jsonify({'message': 'Registration to Agentverse completed', 'status': status})
     except Exception as e:
-        print(f"Registration error: {str(e)}")  # چاپ ارور دقیق
+        print(f"Registration error: {str(e)}")  # چاپ ارور در لاگ
         return jsonify({'message': 'Registration attempted', 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
