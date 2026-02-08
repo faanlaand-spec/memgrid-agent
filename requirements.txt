@@ -2,4 +2,4 @@ flask==3.0.3
 gunicorn==23.0.0
 psycopg2-binary==2.9.9
 requests==2.32.3
-uagents==0.5.1  # نسخه موجود
+uagents==0.23.6  # نسخه جدیدتر و موجود
