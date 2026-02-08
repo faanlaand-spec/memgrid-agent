@@ -2,4 +2,4 @@ flask==3.0.3
 gunicorn==23.0.0
 psycopg2-binary==2.9.9
 requests==2.32.3
-fetchai==0.2.2  # SDK برای ثبت agent
+uagents==0.10.0  # SDK درست برای uAgents
